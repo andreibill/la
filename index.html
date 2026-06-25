@@ -1956,6 +1956,7 @@ async function checkGate() {
   if (h === GATE_HASH) {
     try { localStorage.setItem('ili_unlocked', '1'); } catch (e) {}
     document.getElementById('gate').classList.add('hidden');
+    afterUnlock();
   } else {
     document.getElementById('gateMsg').textContent = 'Hmm, nu e bine. Mai încearcă 😏';
   }
@@ -1963,20 +1964,25 @@ async function checkGate() {
 function initGate() {
   let ok = false;
   try { ok = localStorage.getItem('ili_unlocked') === '1'; } catch (e) {}
-  if (ok) { document.getElementById('gate').classList.add('hidden'); return; }
+  if (ok) { document.getElementById('gate').classList.add('hidden'); afterUnlock(); return; }
   const inp = document.getElementById('gateInput');
   if (inp) {
     inp.addEventListener('keydown', e => { if (e.key === 'Enter') checkGate(); });
     inp.focus();
   }
 }
-initGate();
+// runs only once she's past the gate, so album/resume animations play when she sees them
+let unlockedRan = false;
+function afterUnlock() {
+  if (unlockedRan) return;
+  unlockedRan = true;
+  if (location.search.indexOf('album') !== -1) showAlbum(); // ?album=1 preview (still gated)
+  else resumeIfSaved();
+}
 
 applyMute(); // sync the mute button icon with any saved preference
 checkAlbumButton(); // show "Vezi album" on welcome if she's finished before
-// ?album=1 jumps straight to the album (handy preview); otherwise resume where she left off
-if (location.search.indexOf('album') !== -1) showAlbum();
-else resumeIfSaved();
+initGate();         // shows the gate; afterUnlock() fires only once she's in
 </script>
 </body>
 </html>

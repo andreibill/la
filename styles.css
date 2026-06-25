@@ -460,10 +460,12 @@
   }
   .wheel-seg-label > span {
     margin-top: 12%;
-    display: block; text-align: center; white-space: nowrap;
+    display: block; text-align: center;
+    /* etichetele lungi (ex. "Kerastase ulei de par") se rup pe mai multe randuri */
+    white-space: normal; max-width: 7.5em; overflow-wrap: break-word;
     font-family: var(--display); font-weight: 800;
     color: var(--seg-color, #5e3414);
-    font-size: clamp(0.62rem, 2.6vw, 0.92rem); line-height: 1.02;
+    font-size: clamp(0.62rem, 2.6vw, 0.92rem); line-height: 1.04;
     letter-spacing: 0.2px;
   }
   .wheel-seg-label .we { display: block; font-size: 1.7em; margin-bottom: 2px; }

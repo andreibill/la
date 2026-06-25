@@ -12,12 +12,12 @@
 <!-- password gate -->
 <div id="gate">
   <div class="gate-card">
-    <div class="gate-emoji">🔒</div>
+    <div class="gate-emoji"><span data-ic="lock"></span></div>
     <h1>Parolă</h1>
-    <p>Introdu parola ca să continui. 💜</p>
+    <p>Introdu parola ca să continui. <span data-ic="heart"></span></p>
     <input id="gateInput" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="parola...">
-    <div><button onclick="checkGate()">Intră →</button></div>
-    <p class="small gate-hint">Indiciu: nume de cățel 🐶</p>
+    <div><button onclick="checkGate()">Intră <span data-ic="arrow-right"></span></button></div>
+    <p class="small gate-hint">Indiciu: nume de cățel <span data-ic="dog"></span></p>
     <p class="small" id="gateMsg">&nbsp;</p>
   </div>
 </div>
@@ -26,9 +26,9 @@
 <div id="progressWrap" class="hidden">
   <span id="progressLabel">Drumul spre cadou</span>
   <div id="progressTrack"><div id="progressFill"></div></div>
-  <span id="progressGift">🎁</span>
-  <button id="muteBtn" onclick="toggleMute()" aria-label="Pornește/oprește sunetul" title="Sunet">🔊</button>
-  <button id="restartBtn" onclick="restartGame()" aria-label="Începe de la capăt" title="De la capăt">⟲</button>
+  <span id="progressGift" data-ic="gift"></span>
+  <button id="muteBtn" onclick="toggleMute()" aria-label="Pornește/oprește sunetul" title="Sunet"></button>
+  <button id="restartBtn" onclick="restartGame()" aria-label="Începe de la capăt" title="De la capăt" data-ic="arrow-counter-clockwise"></button>
 </div>
 
 <!-- green-screen reward overlay (one or more chroma-keyed videos, play with the sound) -->
@@ -39,12 +39,12 @@
 
 <!-- WELCOME -->
 <div class="screen" id="welcome">
-  <div class="emoji-row">🎹 🐶 🐈‍⬛ 💜</div>
+  <div class="emoji-row"><span data-ic="piano-keys"></span> <span data-ic="dog"></span> <span data-ic="cat"></span> <span data-ic="heart"></span></div>
   <h1>La mulți ani, Ilinca!</h1>
-  <p>Înainte să primești cadoul, trebuie să-l meriți. 😏</p>
-  <p>Trebuie să joci un <em>joc</em> ca să ajungi la cadoul tău. 💜</p>
-  <button onclick="startQuiz()">Să începem →</button>
-  <button id="albumBtn" class="hidden" onclick="showAlbum()">Vezi album 💜</button>
+  <p>Înainte să primești cadoul, trebuie să-l meriți. <span data-ic="smiley-wink"></span></p>
+  <p>Trebuie să joci un <em>joc</em> ca să ajungi la cadoul tău. <span data-ic="heart"></span></p>
+  <button onclick="startQuiz()">Să începem <span data-ic="arrow-right"></span></button>
+  <button id="albumBtn" class="hidden" onclick="showAlbum()">Vezi album <span data-ic="heart"></span></button>
 </div>
 
 <!-- QUIZ -->
@@ -53,74 +53,74 @@
   <div class="q-text" id="qText"></div>
   <div class="options" id="qOptions"></div>
   <div class="feedback" id="qFeedback"></div>
-  <button id="nextBtn" class="hidden" onclick="nextQuestion()">Următoarea →</button>
+  <button id="nextBtn" class="hidden" onclick="nextQuestion()">Următoarea <span data-ic="arrow-right"></span></button>
 </div>
 
 <!-- QUIZ DONE -->
 
 <!-- DRIVING -->
 <div class="screen hidden" id="driving">
-  <h2>Ok, atunci du-te și ia-l! 🚗💨</h2>
+  <h2>Ok, atunci du-te și ia-l! <span data-ic="car"></span><span data-ic="wind"></span></h2>
   <canvas id="gameCanvas" width="900" height="620"></canvas>
-  <p class="controls-hint">Folosește <strong>tastele săgeți</strong>. Ferește-te de mașini 🚗 și de bălțile de ulei 🛢️. Ajunge la cadou! 🎁</p>
+  <p class="controls-hint">Folosește <strong>tastele săgeți</strong>. Ferește-te de mașini <span data-ic="car"></span> și de bălțile de ulei <span data-ic="drop"></span>. Ajunge la cadou! <span data-ic="gift"></span></p>
   <div class="touch-controls">
-    <button id="leftBtn" aria-label="Stânga">←</button>
-    <button id="upBtn" aria-label="Înainte">↑</button>
-    <button id="rightBtn" aria-label="Dreapta">→</button>
+    <button id="leftBtn" aria-label="Stânga" data-ic="arrow-left"></button>
+    <button id="upBtn" aria-label="Înainte" data-ic="arrow-up"></button>
+    <button id="rightBtn" aria-label="Dreapta" data-ic="arrow-right"></button>
   </div>
 </div>
 
 <!-- LOSE -->
 <div class="screen hidden" id="lose">
-  <div class="emoji-row">🔥🚗🔥</div>
+  <div class="emoji-row"><span data-ic="fire"></span><span data-ic="car"></span><span data-ic="fire"></span></div>
   <h1>Of, ai luat foc!</h1>
-  <p>Ai atins un obstacol. Dar nu-ți face griji — mai ai vieți. 😄</p>
-  <button onclick="startDriving()">Încearcă din nou →</button>
+  <p>Ai atins un obstacol. Dar nu-ți face griji — mai ai vieți. <span data-ic="smiley"></span></p>
+  <button onclick="startDriving()">Încearcă din nou <span data-ic="arrow-right"></span></button>
 </div>
 
 <!-- GIFT -->
 <div class="screen hidden" id="gift">
-  <h1>Ai reușit, Ilinca! 💜</h1>
-  <div id="giftBox" class="gift-box" onclick="openGift()">🎁</div>
+  <h1>Ai reușit, Ilinca! <span data-ic="heart"></span></h1>
+  <div id="giftBox" class="gift-box" onclick="openGift()"><span data-ic="gift"></span></div>
   <p id="giftHint">(atinge cutia)</p>
   <div id="giftReveal"></div>
 </div>
 
 <!-- LUCKY WHEEL (its own full page) -->
 <div class="screen hidden" id="wheelScreen">
-  <h1>Roata norocului 🎡</h1>
-  <p class="wheel-intro">Mai e ceva... apasă <strong>SPIN</strong> și vezi ce câștigi! 💜</p>
+  <h1>Roata norocului <span data-ic="sparkle"></span></h1>
+  <p class="wheel-intro">Mai e ceva... apasă <strong>SPIN</strong> și vezi ce câștigi! <span data-ic="heart"></span></p>
   <div id="wheelHost"></div>
   <div class="wheel-result" id="wheelResult"></div>
 </div>
 
 <!-- PIANO INTERLUDE (between Q2 and Q3): guess the song -->
 <div class="screen hidden" id="pianoLevel">
-  <div class="emoji-row">🎹</div>
+  <div class="emoji-row"><span data-ic="piano-keys"></span></div>
   <h1>Ghicește melodia</h1>
-  <p>Ascultă pianul și ghicește ce piesă cântă. 💜</p>
+  <p>Ascultă pianul și ghicește ce piesă cântă. <span data-ic="heart"></span></p>
   <p class="small">Apasă <strong>„Cântă"</strong> ca s-o asculți (de câte ori vrei), apoi alege răspunsul corect.</p>
   <div style="margin: 14px 0;">
-    <button id="listenBtn" onclick="playProgression()">▶ Cântă</button>
+    <button id="listenBtn" onclick="playProgression()"><span data-ic="play"></span> Cântă</button>
   </div>
   <div id="piano" class="piano"></div>
   <p class="small" id="lastChord">&nbsp;</p>
   <div id="songOptions" class="options" style="max-width:420px;margin:16px auto 0;"></div>
-  <button id="pianoContinue" class="hidden" onclick="finishPiano()">Continuă spre întrebarea 3 →</button>
+  <button id="pianoContinue" class="hidden" onclick="finishPiano()">Continuă spre întrebarea 3 <span data-ic="arrow-right"></span></button>
 </div>
 
 <!-- WORDLE INTERLUDE (between Q3 and Q4) -->
 <div class="screen hidden" id="wordleLevel">
   <div id="wordleIntro">
-    <div class="emoji-row">🟩🟨⬜</div>
+    <div class="emoji-row"><span data-ic="square" data-ic-cls="sq-green"></span><span data-ic="square" data-ic-cls="sq-gold"></span><span data-ic="square" data-ic-cls="sq-cream"></span></div>
     <h1>Ghicește cuvântul</h1>
-    <p>Un cuvânt de 5 litere. Ai 6 încercări. 💜</p>
+    <p>Un cuvânt de 5 litere. Ai 6 încercări. <span data-ic="heart"></span></p>
   </div>
   <div id="wordleGrid" class="wordle-grid"></div>
   <p class="small" id="wordleMsg">&nbsp;</p>
   <div id="wordleKeyboard" class="wordle-keyboard"></div>
   <div id="wordleReveal"></div>
-  <button id="wordleContinue" class="hidden" onclick="finishWordle()">Continuă spre întrebarea 4 →</button>
+  <button id="wordleContinue" class="hidden" onclick="finishWordle()">Continuă spre întrebarea 4 <span data-ic="arrow-right"></span></button>
 </div>
 
 <script src="app.js"></script>

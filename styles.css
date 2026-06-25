@@ -1,19 +1,37 @@
   :root {
-    --ink: #0e0618;
-    --plum-deep: #1c0b30;
-    --plum: #2e1252;
+    --ink: #0d0a1f;
+    --plum-deep: #1a0d33;
+    --plum: #2c1556;
     --orchid: #b15cff;
     --lilac: #d8b8ff;
     --cream: #f7f0ff;
     --gold: #ffd24a;
     --magenta: #ff48b0;
     --cyan: #3fe0ff;
+    /* paleta extinsa: nu mai e totul mov */
+    --green: #3fe089;
+    --teal: #2fd6c3;
+    --orange: #ff8a3d;
+    --coral: #ff6b6b;
     --neon-glow: rgba(177, 92, 255, 0.55);
     --btn-shadow: #5e2398;
     --display: 'Fraunces', Georgia, 'Times New Roman', serif;
     --body: 'Space Grotesk', system-ui, -apple-system, sans-serif;
     --mono: 'Space Mono', ui-monospace, monospace;
+    /* accentul implicit al unui ecran; fiecare ecran il poate suprascrie mai jos */
+    --accent: var(--orchid);
+    --accent2: var(--magenta);
   }
+
+  /* fiecare ecran isi are propria pereche de culori -> interfata nu mai e monocroma */
+  #welcome     { --accent: var(--orchid); --accent2: var(--magenta); }
+  #quiz        { --accent: var(--cyan);   --accent2: var(--orchid); }
+  #pianoLevel  { --accent: var(--gold);   --accent2: var(--orange); }
+  #wordleLevel { --accent: var(--green);  --accent2: var(--teal); }
+  #driving     { --accent: var(--magenta);--accent2: var(--cyan); }
+  #lose        { --accent: var(--orange); --accent2: var(--coral); }
+  #gift        { --accent: var(--magenta);--accent2: var(--gold); }
+  #wheelScreen { --accent: var(--gold);   --accent2: var(--orange); }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -34,12 +52,35 @@
     justify-content: center;
     padding: 56px 20px 28px;
     overflow-x: hidden;
+    position: relative;
   }
-  /* faint CRT scanlines in the ambient (panels sit above them) */
+  /* aura de culoare care se misca incet pe fundal: orchid + cyan + magenta + auriu.
+     hue-rotate-ul plimba culorile la nesfarsit, asa ca fundalul nu mai e doar mov */
+  body::before {
+    content: ''; position: fixed; inset: -25%; z-index: 0; pointer-events: none;
+    background:
+      radial-gradient(38vmax 38vmax at 14% 18%, rgba(177,92,255,0.34), transparent 60%),
+      radial-gradient(34vmax 34vmax at 86% 14%, rgba(63,224,255,0.26), transparent 60%),
+      radial-gradient(42vmax 42vmax at 82% 88%, rgba(255,72,176,0.26), transparent 62%),
+      radial-gradient(30vmax 30vmax at 18% 86%, rgba(255,210,74,0.20), transparent 60%),
+      radial-gradient(28vmax 28vmax at 50% 50%, rgba(47,214,195,0.16), transparent 60%);
+    filter: blur(6px) saturate(1.15);
+    /* doar transform (compozit, ieftin) ca sa nu fure cadre jocului pe canvas */
+    animation: bgDrift 26s ease-in-out infinite alternate;
+    will-change: transform;
+  }
+  @keyframes bgDrift {
+    0%   { transform: translate3d(-2%, -1%, 0) scale(1.05) rotate(0deg); }
+    50%  { transform: translate3d(1.5%, 1%, 0) scale(1.1) rotate(-3deg); }
+    100% { transform: translate3d(2.5%, 2.5%, 0) scale(1.15) rotate(6deg); }
+  }
+  /* model discret de buline pe tot fundalul (peste aura, sub panouri) */
   body::after {
     content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 1;
-    background: repeating-linear-gradient(0deg, rgba(0,0,0,0.13) 0 1px, transparent 1px 3px);
-    opacity: 0.5;
+    background:
+      radial-gradient(circle, rgba(255,255,255,0.05) 1px, transparent 1.6px) 0 0 / 26px 26px,
+      repeating-linear-gradient(0deg, rgba(0,0,0,0.12) 0 1px, transparent 1px 3px);
+    opacity: 0.6;
   }
 
   /* progress toward the gift (cadou) — shown on every screen */
@@ -63,10 +104,13 @@
   }
   #progressFill {
     height: 100%; width: 0%;
-    background: linear-gradient(90deg, var(--cyan), var(--orchid) 55%, var(--magenta));
+    background: linear-gradient(90deg, var(--cyan), var(--green) 28%, var(--gold) 52%, var(--orange) 72%, var(--magenta));
+    background-size: 220% 100%;
     box-shadow: 0 0 12px var(--neon-glow);
     transition: width 0.6s cubic-bezier(.34,1.3,.5,1);
+    animation: progShift 4s linear infinite;
   }
+  @keyframes progShift { to { background-position: -220% 0; } }
   #progressGift { font-size: 1.3rem; line-height: 1; filter: drop-shadow(0 0 6px var(--gold)); }
   #muteBtn {
     flex: none; width: 34px; height: 30px; padding: 0; margin: 0;
@@ -145,17 +189,21 @@
   @media (prefers-reduced-motion: reduce) {
     .mlg-rage { animation: none; }
     #mlgStrobe { animation: none; background: rgba(157,95,211,0.15); }
+    /* opreste miscarea ambientala/decorativa, dar pastreaza culorile */
+    body::before { animation: none; }
+    h1, .screen::before, #progressFill,
+    .emoji-row .ic, .gate-emoji .ic, #progressGift .ic { animation: none; }
   }
 
   /* green-screen reward overlay */
   #mediaOverlay {
     position: fixed; inset: 0; z-index: 100;
     display: flex; align-items: center; justify-content: center;
-    flex-wrap: wrap; gap: 3vw;
+    flex-wrap: wrap; gap: 2vw;
     background: transparent; pointer-events: none; /* can't be skipped by clicking */
   }
   #mediaOverlay canvas {
-    max-height: 78vh;
+    max-height: 96vh;
     filter: drop-shadow(0 12px 32px rgba(0,0,0,0.55));
     animation: popCorrect 0.5s ease;
   }
@@ -163,21 +211,34 @@
   #mediaOverlay video { position: fixed; top: -9999px; left: -9999px; width: 2px; height: 2px; opacity: 0; pointer-events: none; }
 
   .screen {
-    position: relative; z-index: 2;
+    position: relative; z-index: 2; overflow: hidden;
     animation: screenIn 0.42s cubic-bezier(.2,.7,.3,1) both;
     width: 100%;
     max-width: 640px;
-    background: linear-gradient(180deg, rgba(46,18,82,0.84), rgba(24,10,44,0.86));
-    border: 1.5px solid rgba(177,92,255,0.55);
+    /* fundalul cardului primeste o nuanta din accentul ecranului, nu mai e doar mov */
+    background:
+      radial-gradient(120% 80% at 12% -10%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 55%),
+      radial-gradient(120% 80% at 100% 0%, color-mix(in srgb, var(--accent2) 16%, transparent), transparent 55%),
+      linear-gradient(180deg, rgba(46,18,82,0.84), rgba(24,10,44,0.88));
+    border: 1.5px solid color-mix(in srgb, var(--accent) 55%, transparent);
     border-radius: 24px;
-    padding: 40px 30px;
+    padding: 44px 30px 40px;
     box-shadow:
       inset 0 1px 0 rgba(255,255,255,0.08),
       0 24px 70px rgba(0,0,0,0.55),
-      0 0 60px rgba(177,92,255,0.20);
+      0 0 60px color-mix(in srgb, var(--accent) 22%, transparent);
     backdrop-filter: blur(6px);
     text-align: center;
   }
+  /* banda colorata in capul fiecarui card, in cele doua accente ale ecranului */
+  .screen::before {
+    content: ''; position: absolute; left: 0; right: 0; top: 0; height: 4px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2), var(--accent));
+    background-size: 200% 100%;
+    box-shadow: 0 0 16px var(--accent);
+    animation: stripShift 5s linear infinite;
+  }
+  @keyframes stripShift { to { background-position: 200% 0; } }
 
   .hidden { display: none !important; }
 
@@ -217,14 +278,21 @@
     line-height: 1.05;
     letter-spacing: -0.5px;
     margin-bottom: 10px;
-    background: linear-gradient(118deg, var(--cream) 0%, var(--lilac) 38%, var(--orchid) 72%, var(--magenta) 100%);
+    /* titlul ia accentul ecranului si straluceste lent (shimmer) */
+    background: linear-gradient(100deg, var(--cream) 0%, var(--lilac) 28%, var(--accent) 60%, var(--accent2) 100%);
+    background-size: 220% auto;
     -webkit-background-clip: text; background-clip: text; color: transparent;
-    filter: drop-shadow(0 2px 18px rgba(177,92,255,0.45));
+    filter: drop-shadow(0 2px 18px color-mix(in srgb, var(--accent) 45%, transparent));
+    animation: titleShimmer 7s ease-in-out infinite;
+  }
+  @keyframes titleShimmer {
+    0%,100% { background-position: 0% center; }
+    50%     { background-position: 100% center; }
   }
   h2 {
     font-family: var(--display); font-weight: 600;
-    font-size: clamp(1.4rem, 4vw, 1.7rem); color: var(--gold);
-    margin-bottom: 18px; text-shadow: 0 0 18px rgba(255,210,74,0.35);
+    font-size: clamp(1.4rem, 4vw, 1.7rem); color: var(--accent);
+    margin-bottom: 18px; text-shadow: 0 0 18px color-mix(in srgb, var(--accent) 40%, transparent);
   }
   p { font-size: 1.08rem; line-height: 1.62; margin-bottom: 14px; color: var(--cream); }
   .small { font-size: 0.9rem; color: var(--lilac); }
@@ -236,26 +304,31 @@
     font-size: 1.05rem;
     font-weight: 700;
     letter-spacing: 0.3px;
-    background: linear-gradient(180deg, var(--orchid), #8e3fe0);
+    /* butonul principal foloseste cele doua accente ale ecranului */
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
     color: #fff;
     border: none;
     border-radius: 14px;
     padding: 14px 28px;
     margin: 8px 4px;
     cursor: pointer;
-    box-shadow: 0 5px 0 var(--btn-shadow), 0 9px 18px rgba(0,0,0,0.4);
+    box-shadow:
+      0 5px 0 color-mix(in srgb, var(--accent) 45%, #000),
+      0 9px 20px color-mix(in srgb, var(--accent) 35%, transparent);
     transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.2s ease;
   }
   button:hover {
-    filter: brightness(1.08);
+    filter: brightness(1.08) saturate(1.1);
     transform: translateY(-1px);
-    box-shadow: 0 6px 0 var(--btn-shadow), 0 12px 24px var(--neon-glow);
+    box-shadow:
+      0 6px 0 color-mix(in srgb, var(--accent) 45%, #000),
+      0 12px 28px color-mix(in srgb, var(--accent) 50%, transparent);
   }
   button:active {
     transform: translateY(4px);
-    box-shadow: 0 1px 0 var(--btn-shadow), 0 3px 8px rgba(0,0,0,0.4);
+    box-shadow: 0 1px 0 color-mix(in srgb, var(--accent) 45%, #000), 0 3px 8px rgba(0,0,0,0.4);
   }
-  button:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+  button:focus-visible { outline: 3px solid var(--cream); outline-offset: 3px; }
 
   /* Quiz */
   .q-counter { font-family: var(--mono); font-size: 0.72rem; color: var(--gold); margin-bottom: 12px; letter-spacing: 3px; text-transform: uppercase; }
@@ -263,10 +336,12 @@
   .options { display: flex; flex-direction: column; gap: 12px; }
   .options button {
     width: 100%; text-align: left;
-    background: linear-gradient(180deg, rgba(177,92,255,0.24), rgba(177,92,255,0.10));
+    /* optiunile de quiz sunt translucide, in accentul ecranului (cyan la quiz) */
+    background:
+      linear-gradient(180deg, color-mix(in srgb, var(--accent) 24%, transparent), color-mix(in srgb, var(--accent) 9%, transparent));
     color: var(--cream);
-    border: 1px solid rgba(177,92,255,0.5);
-    box-shadow: 0 4px 0 rgba(94,35,152,0.55), 0 6px 14px rgba(0,0,0,0.3);
+    border: 1px solid color-mix(in srgb, var(--accent) 50%, transparent);
+    box-shadow: 0 4px 0 color-mix(in srgb, var(--accent) 35%, #000), 0 6px 14px rgba(0,0,0,0.3);
     animation: optIn 0.32s ease both;
   }
   .options button:nth-child(1) { animation-delay: 0.04s; }
@@ -275,9 +350,11 @@
   .options button:nth-child(4) { animation-delay: 0.22s; }
   .options button:hover:not(:disabled) {
     filter: none;
-    background: linear-gradient(180deg, rgba(177,92,255,0.42), rgba(177,92,255,0.2));
+    background:
+      linear-gradient(180deg, color-mix(in srgb, var(--accent) 42%, transparent), color-mix(in srgb, var(--accent) 20%, transparent));
+    border-color: color-mix(in srgb, var(--accent) 75%, transparent);
   }
-  .options button:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 1px 0 rgba(94,35,152,0.55); }
+  .options button:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 1px 0 color-mix(in srgb, var(--accent) 35%, #000); }
   .options button.correct {
     background: linear-gradient(180deg, #3fd884, #25a55f); color: #04130a; border-color: #3fd884;
     box-shadow: 0 4px 0 #176b3d, 0 0 24px rgba(63,224,132,0.55);
@@ -523,3 +600,39 @@
     .wordle-cell { width: 44px; height: 44px; font-size: 1.3rem; }
     .wordle-row { grid-template-columns: repeat(5, 44px); }
   }
+
+  /* ---------- ICONITE (Phosphor inline SVG) ---------- */
+  /* iconitele pline Phosphor sunt "edge-to-edge" si arata mai grele decat emoji-ul,
+     asa ca le tinem putin sub 1em ca sa para de aceeasi marime cu textul/emoji-ul */
+  .ic {
+    display: inline-block; width: 0.82em; height: 0.82em;
+    vertical-align: -0.1em; fill: currentColor; flex-shrink: 0;
+  }
+  /* iconitele singure pe buton (sageti, sunet, restart) pot fi cat textul */
+  .touch-controls button .ic, #muteBtn .ic, #restartBtn .ic { width: 1em; height: 1em; vertical-align: -0.16em; }
+  /* inimioarele: mereu mov, pentru caldura emoji-ului 💜 */
+  .ic-heart { color: var(--orchid); }
+  /* patratelele din intro-ul de Wordle, in culorile jocului */
+  .ic.sq-green { color: #3fae6b; }
+  .ic.sq-gold  { color: var(--gold); }
+  .ic.sq-cream { color: var(--cream); }
+  /* in randul de emoji iconitele plutesc usor, decalat, in culori diferite */
+  .emoji-row .ic { vertical-align: middle; animation: bob 3.2s ease-in-out infinite; }
+  .emoji-row .ic:nth-child(1) { color: var(--cyan);   animation-delay: 0s; }
+  .emoji-row .ic:nth-child(2) { color: var(--gold);   animation-delay: 0.25s; }
+  .emoji-row .ic:nth-child(3) { color: var(--green);  animation-delay: 0.5s; }
+  .emoji-row .ic:nth-child(4) { color: var(--magenta); animation-delay: 0.75s; }
+  /* inima ramane mov chiar si in randul colorat */
+  .emoji-row .ic-heart { color: var(--orchid); }
+  @keyframes bob {
+    0%,100% { transform: translateY(0) rotate(-2deg); }
+    50%     { transform: translateY(-7px) rotate(2deg); }
+  }
+  /* lacatul de la poarta pulseaza linistit */
+  .gate-emoji .ic { animation: lockPulse 2.6s ease-in-out infinite; color: var(--orchid); }
+  @keyframes lockPulse {
+    0%,100% { transform: scale(1); filter: drop-shadow(0 0 8px color-mix(in srgb, var(--orchid) 60%, transparent)); }
+    50%     { transform: scale(1.08); filter: drop-shadow(0 0 18px color-mix(in srgb, var(--cyan) 70%, transparent)); }
+  }
+  /* cadoul din bara de progres saltareste discret */
+  #progressGift .ic { color: var(--gold); animation: bob 2.8s ease-in-out infinite; }

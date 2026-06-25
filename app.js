@@ -284,7 +284,7 @@ function preloadMedia() {
   preloaded = true;
   const files = [
     'tung-tung-sahur.mp3', 'q1.mp4', 'q2.mp3', 'q2.webm',
-    'q3.mp3', 'q3-cat.mp4', 'q3-dog.mp4', 'mlg.mp3', 'jam.mp3', 'sloth.webp'
+    'q3.mp3', 'q3-cat.mp4', 'q3-dog.mp4', 'mlg.mp3', 'jam.mp3', 'sloth.webp', 'faaah.mp3'
   ].concat(GIFT_PHOTOS || []);
   files.forEach(src => {
     if (/\.(mp4|webm)$/i.test(src)) { const v = document.createElement('video'); v.preload = 'auto'; v.muted = true; v.src = src; }
@@ -448,6 +448,7 @@ function applyMute() {
   try { localStorage.setItem('ili_muted', audioMuted ? '1' : '0'); } catch (e) {}
   if (jamAudio) jamAudio.muted = audioMuted;
   if (sfx) sfx.muted = audioMuted;
+  if (faaahAudio) faaahAudio.muted = audioMuted;
   if (masterOut) masterOut.gain.value = audioMuted ? 0 : 0.9;
   const b = document.getElementById('muteBtn');
   if (b) b.innerHTML = audioMuted ? icon('speaker-slash') : icon('speaker-high');
@@ -480,12 +481,28 @@ function sfxCorrect() {
   ensureAudio();
   [523.25, 659.25, 783.99].forEach((f, i) => sfxTone(f, 0.18, { type: 'triangle', gain: 0.12, when: i * 0.08 }));
 }
-// raspuns gresit: un buzz scurt care coboara
-function sfxWrong() { ensureAudio(); sfxTone(240, 0.24, { type: 'sawtooth', gain: 0.10, slideTo: 120 }); }
+// raspuns gresit: reda fisierul faaah.mp3 (element audio propriu, ca sa nu se incurce
+// cu melodiile-recompensa si sa poata fi pornit din nou la fiecare greseala)
+let faaahAudio = null;
+function sfxWrong() {
+  try {
+    if (!faaahAudio) faaahAudio = new Audio('faaah.mp3');
+    faaahAudio.muted = audioMuted;
+    faaahAudio.currentTime = 0;
+    const p = faaahAudio.play();
+    if (p) p.catch(() => {});   // daca autoplay e blocat, mergem mai departe
+  } catch (e) {}
+}
 // pop (deschiderea cadoului)
 function sfxPop() { ensureAudio(); sfxTone(360, 0.12, { type: 'sine', gain: 0.18, slideTo: 740 }); }
 // tic de masina de scris: foarte scurt si discret, cu pitch usor variabil
 function sfxType() { sfxTone(1500 + Math.random() * 500, 0.025, { type: 'square', gain: 0.025 }); }
+// tasta de Wordle: un "toc" scurt; mai jos cand stergi
+function sfxKey(down) {
+  ensureAudio();
+  if (down) sfxTone(300, 0.05, { type: 'square', gain: 0.06, slideTo: 220 });
+  else sfxTone(440, 0.05, { type: 'square', gain: 0.06, slideTo: 560 });
+}
 // castig: o mica fanfara (arpegiu major + sclipici sus)
 function sfxWin() {
   ensureAudio();
@@ -496,6 +513,8 @@ function sfxWin() {
 // click sonor pe orice buton sau pe butoanele "ecran" (hub-ul rotii) — faza de capture,
 // ca sa sune chiar daca handler-ul opreste propagarea
 document.addEventListener('click', (e) => {
+  // tastele de Wordle au propriul sunet (sfxKey), nu si click-ul generic
+  if (e.target.closest('.wordle-keyboard')) return;
   if (e.target.closest('button, .wheel-hub')) sfxClick();
 }, true);
 
@@ -767,6 +786,7 @@ function addLetter(letter) {
   cells[wordleCol].textContent = letter;
   cells[wordleCol].classList.add('filled');
   wordleCol++;
+  sfxKey(); // sunet de tastare cand introduci o litera
 }
 
 function removeLetter() {
@@ -776,6 +796,7 @@ function removeLetter() {
   if (!cells) return;
   cells[wordleCol].textContent = '';
   cells[wordleCol].classList.remove('filled');
+  sfxKey(true); // toc mai jos cand stergi
 }
 
 function readGuess() {
@@ -853,7 +874,8 @@ function submitGuess() {
   wordleRow++;
   wordleCol = 0;
   if (wordleRow >= WORDLE_MAX) {
-    // out of attempts — let her keep trying anyway (it's a birthday, not an exam)
+    // a ramas fara incercari (a pierdut nivelul) -> faaah; dar o lasam sa continue
+    sfxWrong();
     document.getElementById('wordleMsg').innerHTML =
       `Indiciu: cuvântul e „${WORDLE_TARGET}". Mai scrie-l o dată ` + icon('smiley');
     // add one more bonus row so she can still finish
@@ -1259,8 +1281,7 @@ let giftOpened = false;
 function openGift() {
   if (giftOpened) return;
   giftOpened = true;
-  sfxPop();
-  setTimeout(sfxWin, 260); // mica fanfara dupa pop
+  sfxPop(); // doar pop-ul cutiei; fanfara ar acoperi animatia albumului + scrisul care urmeaza
   document.getElementById('giftBox').classList.add('opening');
   document.getElementById('giftHint').classList.add('hidden');
   try { localStorage.setItem('ili_finished', '1'); } catch (e) {}
@@ -1390,7 +1411,7 @@ const WHEEL_SEGMENTS = [
   { label: '1000 lei',  ic: 'coins',       color: CREAM, text: BROWN }, // 0  <- premiul real (rigged), dar nu mai e evidentiat
   { label: 'Nimic',     ic: 'smiley-blank', color: TAN,  text: BROWN }, // 1
   { label: '600 lei',   ic: 'coin',        color: CREAM, text: BROWN }, // 2
-  { label: 'Vacanță',   ic: 'island',      color: TAN,   text: BROWN }, // 3  <- pozitia initiala a acului
+  { label: 'Kerastase ulei de par', ic: 'drop', color: TAN, text: BROWN }, // 3  <- pozitia initiala a acului
   { label: 'Mașină',    ic: 'car',         color: CREAM, text: BROWN }, // 4  (jos)
   { label: 'Croazieră', ic: 'boat',        color: TAN,   text: BROWN }, // 5
   { label: '300 lei',   ic: 'money',       color: CREAM, text: BROWN }, // 6
@@ -1398,7 +1419,7 @@ const WHEEL_SEGMENTS = [
 ];
 const SEG = 360 / WHEEL_SEGMENTS.length; // 45deg per slice
 const WHEEL_FROM = -SEG / 2;             // so segment 0 is centred at the top
-// la repaus, acul arata segmentul 3 (Vacanță), nu jackpotul -> nu se vede ca e aranjata.
+// la repaus, acul arata segmentul 3 (Kerastase ulei de par), nu jackpotul -> nu se vede ca e aranjata.
 // rotatia finala ramane 2520deg (= 7x360), deci tot 1000 lei se opreste sub ac.
 const WHEEL_INITIAL_ROT = -3 * SEG; // -135deg: aduce segmentul 3 in dreptul acului
 

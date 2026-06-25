@@ -350,6 +350,7 @@
     background: rgba(177,92,255,0.12); color: var(--cream);
   }
   #gateInput:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+  .gate-hint { color: var(--gold); opacity: 0.85; margin-top: 8px; }
 
   /* driving screen needs more room for the bigger canvas */
   #driving { max-width: 960px; }
@@ -592,6 +593,7 @@
     <p>Introdu parola ca să continui. 💜</p>
     <input id="gateInput" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="parola...">
     <div><button onclick="checkGate()">Intră →</button></div>
+    <p class="small gate-hint">Indiciu: nume de cățel 🐶</p>
     <p class="small" id="gateMsg">&nbsp;</p>
   </div>
 </div>
@@ -1940,7 +1942,7 @@ function launchConfetti() {
 // show a small sliver of progress on the welcome screen
 setProgress(4);
 // ---------- PASSWORD GATE (client-side) ----------
-const GATE_HASH = "4ae444a7b76f494d75fa83d5b7c25f79fa3a8d22b137c8418ad1298ef31abcd9";
+const GATE_HASH = "4d64dc6abe58bddd5c2957ae7fc114a74989d3671a1747804ffc8954d59849e7";
 async function sha256hex(s) {
   const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
   return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');

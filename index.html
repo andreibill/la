@@ -109,6 +109,14 @@
   <button id="pianoContinue" class="hidden" onclick="finishPiano()">Continuă spre întrebarea 3 <span data-ic="arrow-right"></span></button>
 </div>
 
+<!-- PAUZA (dupa pian, inainte de intrebarea 3) -->
+<div class="screen hidden" id="breakLevel">
+  <div class="emoji-row"><span data-ic="smiley-wink"></span></div>
+  <h1>Stiu ca te-ai plictisit <span data-ic="heart"></span></h1>
+  <p>Hai sa luam o pauza</p>
+  <button id="breakBtn" onclick="breakClick(this)">Click me</button>
+</div>
+
 <!-- WORDLE INTERLUDE (between Q3 and Q4) -->
 <div class="screen hidden" id="wordleLevel">
   <div id="wordleIntro">

@@ -698,6 +698,29 @@ function initPiano() {
 
 function finishPiano() {
   document.getElementById('pianoLevel').classList.add('hidden');
+  document.getElementById('breakLevel').classList.remove('hidden');
+}
+
+// Pauza: primul click deschide link-ul intr-un tab nou, apoi dupa 2s
+// butonul se schimba si urmatorul click continua spre intrebarea 3.
+const BREAK_LINK = 'https://www.tiktok.com/@glueshorts/video/7589052808205339906';
+function breakClick(btn) {
+  window.open(BREAK_LINK, '_blank', 'noopener');
+  btn.disabled = true;
+  setTimeout(function() {
+    btn.disabled = false;
+    const screen = document.getElementById('breakLevel');
+    screen.querySelector('h1').innerHTML = 'Ok, pauza s-a terminat <span data-ic="heart"></span>';
+    screen.querySelector('p').textContent = 'Hai sa continuam';
+    hydrateIcons(screen);
+    btn.innerHTML = 'Continua <span data-ic="arrow-right"></span>';
+    hydrateIcons(btn);
+    btn.onclick = afterBreak;
+  }, 2000);
+}
+
+function afterBreak() {
+  document.getElementById('breakLevel').classList.add('hidden');
   document.getElementById('quiz').classList.remove('hidden');
   showQuestion(); // current is already 2 -> question 3
 }
